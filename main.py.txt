@@ -1,0 +1,33 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from routers import auth, containers, railcars, locomotives, optimizer, load_plans
+
+app = FastAPI(
+    title="TLO Backend API",
+    description="Train Load Optimization System",
+    version="1.0.0"
+)
+
+# CORS — allows Angular frontend to call this API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Register all routers
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(containers.router, prefix="/containers", tags=["Containers"])
+app.include_router(railcars.router, prefix="/railcars", tags=["Railcars"])
+app.include_router(locomotives.router, prefix="/locomotives", tags=["Locomotives"])
+app.include_router(optimizer.router, prefix="/optimize", tags=["Optimizer"])
+app.include_router(load_plans.router, prefix="/loadplans", tags=["Load Plans"])
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "ok",
+        "service": "TLO Backend API",
+        "version": "1.0.0"
+    }
